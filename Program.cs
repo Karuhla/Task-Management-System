@@ -15,115 +15,202 @@ namespace Task_Management_System
             {
                 Console.WriteLine("1. Add task");
                 Console.WriteLine("2. View tasks");
-                Console.WriteLine("3. Complete task");
-                Console.WriteLine("4. Delete task");
-                Console.WriteLine("5. Exit\n");
+                Console.WriteLine("3. Edit task");
+                Console.WriteLine("4. Complete task");
+                Console.WriteLine("5. Delete task");
+                Console.WriteLine("6. Exit\n");
 
                 string choice = Console.ReadLine() ?? "";
 
                 switch (choice)
                 {
                     case "1":
-                        Console.WriteLine("Enter title");
-                        string title = Console.ReadLine() ?? "";
-                        if (title == "")
-                        {
-                            Console.WriteLine("Title cannot be empty.");
-                            break;
-                        }
-                        Console.WriteLine("Enter description");
-                        string description = Console.ReadLine() ?? "";
 
-                        TaskItem newTask = new TaskItem(nextId, title, description);
-                        myTasks.Add(newTask);
-                        nextId++;
+                        if (AddTask(myTasks, nextId))
+                        {
+                            nextId++;
+                        }
                         break;
 
                     case "2":
-                        foreach (TaskItem task in myTasks)
-                        {
-                            Console.WriteLine($"ID: {task.Id}");
-                            Console.WriteLine($"Title: {task.Title}");
-                            Console.WriteLine($"Description: {task.Description}");
-                            Console.WriteLine($"Is completed: {task.IsCompleted}\n");
-                        }
+
+                        ViewTasks(myTasks);
                         break;
 
                     case "3":
-                        Console.WriteLine("Enter task ID to complete:");
-                        string input = Console.ReadLine() ?? "";
 
-                        if (!int.TryParse(input, out int taskId))
-                        {
-                            Console.WriteLine("Please enter a valid number.");
-                            break;
-                        }
-
-                        TaskItem? taskToComplete = null;
-
-                        foreach (TaskItem task in myTasks)
-                        {
-                            if (task.Id == taskId)
-                            {
-                                taskToComplete = task;
-                                break;
-                            }
-                        }
-
-                        if (taskToComplete == null)
-                        {
-                            Console.WriteLine("Task not found.");
-                        }
-                        else
-                        {
-                            taskToComplete.IsCompleted = true;
-                            Console.WriteLine("Task marked as completed.");
-                        }
-
+                        EditTask(myTasks);
                         break;
 
                     case "4":
-                        Console.WriteLine("Enter task ID to delete:");
-                        string inputDel = Console.ReadLine() ?? "";
 
-                        if(!int.TryParse(inputDel, out int taskIdDel))
-                        {
-                            Console.WriteLine("Please enter a valid number");
-                            break;
-                        }
-
-                        TaskItem? taskToDelete = null;
-
-                        foreach (TaskItem task in myTasks)
-                        {
-                            if (task.Id == taskIdDel)
-                            {
-                                taskToDelete = task;
-                                break;
-                            }
-                        }
-
-                        if (taskToDelete == null)
-                        {
-                            Console.WriteLine("Task not found.");
-                        }
-                        else
-                        {
-                            myTasks.Remove(taskToDelete);
-                            Console.WriteLine("Task deleted.");
-                        }
-
+                        CompleteTask(myTasks);
                         break;
 
                     case "5":
+
+                        DeleteTask(myTasks);
+                        break;
+
+                    case "6":
                         isRunning = false;
                         break;
 
                     default:
-                        Console.WriteLine("Invalid choice.");
+                        Console.WriteLine("Invalid choice.\n");
                         break;
                 }           
             }
         }
+
+        static bool AddTask(List<TaskItem> tasks, int taskId)
+        {
+            Console.WriteLine("Enter title");
+            string title = Console.ReadLine() ?? "";
+            if (string.IsNullOrWhiteSpace(title))
+            {
+                Console.WriteLine("Title cannot be empty.\n");
+                return false;
+            }
+            Console.WriteLine("Enter description");
+            string description = Console.ReadLine() ?? "";
+
+            TaskItem newTask = new TaskItem(taskId, title, description);
+            tasks.Add(newTask);
+
+            return true;
+        }
+
+        static void ViewTasks(List<TaskItem> tasks)
+        {
+            if(tasks.Count == 0)
+            {
+                Console.WriteLine("No tasks available.\n");
+                return;
+            }
+            else 
+            {
+                foreach (TaskItem task in tasks)
+                {
+                    Console.WriteLine($"ID: {task.Id}");
+                    Console.WriteLine($"Title: {task.Title}");
+                    Console.WriteLine($"Description: {task.Description}");
+                    Console.WriteLine($"Is completed: {task.IsCompleted}\n");
+                }
+            }
+        }
+
+        static void EditTask(List<TaskItem> tasks)
+        {
+            Console.WriteLine("Enter task ID to edit:");
+            string editInput = Console.ReadLine() ?? "";
+
+            if (!int.TryParse(editInput, out int taskIdToEdit))
+            {
+                Console.WriteLine("Please enter a valid number.");
+                return;
+            }
+
+            TaskItem? taskToEdit = FindTaskById(tasks, taskIdToEdit);
+
+            if (taskToEdit == null)
+            {
+                Console.WriteLine("Task not found.\n");
+                return;
+            }
+
+            bool changed = false;
+
+            Console.WriteLine($"Current title: {taskToEdit.Title}");
+            Console.WriteLine("Enter new title (leave empty to keep current):");
+
+            string newTitleInput = Console.ReadLine() ?? "";
+
+            if (!string.IsNullOrWhiteSpace(newTitleInput))
+            {
+                taskToEdit.Title = newTitleInput;
+                changed = true;
+            }
+
+            Console.WriteLine($"Current description: {taskToEdit.Description}");
+            Console.WriteLine("Enter new description (leave empty to keep current):");
+
+            string newDescriptionInput = Console.ReadLine() ?? "";
+
+            if (!string.IsNullOrWhiteSpace(newDescriptionInput))
+            {
+                taskToEdit.Description = newDescriptionInput;
+                changed = true;
+            }
+
+            if (changed) 
+            { 
+                Console.WriteLine("Task updated.\n");
+            }
+            else
+            {
+                Console.WriteLine("No changes made.\n");
+            }
+        }
+
+        static void CompleteTask(List<TaskItem> tasks)
+        {
+            Console.WriteLine("Enter task ID to complete:");
+            string Completeinput = Console.ReadLine() ?? "";
+
+            if (!int.TryParse(Completeinput, out int taskIdToComplete))
+            {
+                Console.WriteLine("Please enter a valid number.");
+                return;
+            }
+
+            TaskItem? taskToComplete = FindTaskById(tasks, taskIdToComplete);
+
+            if (taskToComplete == null)
+            {
+                Console.WriteLine("Task not found.\n");
+                return;
+            }
+
+            taskToComplete.IsCompleted = true;
+            Console.WriteLine("Task marked as completed.\n");
+        }
+
+        static void DeleteTask(List<TaskItem> tasks)
+        {
+            Console.WriteLine("Enter task ID to delete:");
+            string deleteInput = Console.ReadLine() ?? "";
+
+            if (!int.TryParse(deleteInput, out int taskIdToDelete))
+            {
+                Console.WriteLine("Please enter a valid number.");
+                return;
+            }
+
+            TaskItem? taskToDelete = FindTaskById(tasks, taskIdToDelete);
+
+            if (taskToDelete == null)
+            {
+                Console.WriteLine("Task not found.");
+                return;
+            }
+
+            tasks.Remove(taskToDelete);
+            Console.WriteLine("Task deleted.\n");
+        }
+
+        static TaskItem? FindTaskById (List<TaskItem> tasks, int taskId)
+        {
+            foreach (TaskItem task in tasks)
+            {
+                if (task.Id == taskId)
+                {
+                    return task;
+                }
+            }
+
+            return null;
+        }
+
     }
 }
