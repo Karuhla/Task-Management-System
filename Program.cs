@@ -16,7 +16,8 @@ namespace Task_Management_System
                 Console.WriteLine("1. Add task");
                 Console.WriteLine("2. View tasks");
                 Console.WriteLine("3. Complete task");
-                Console.WriteLine("4. Exit");
+                Console.WriteLine("4. Delete task");
+                Console.WriteLine("5. Exit\n");
 
                 string choice = Console.ReadLine() ?? "";
 
@@ -82,6 +83,39 @@ namespace Task_Management_System
                         break;
 
                     case "4":
+                        Console.WriteLine("Enter task ID to delete:");
+                        string inputDel = Console.ReadLine() ?? "";
+
+                        if(!int.TryParse(inputDel, out int taskIdDel))
+                        {
+                            Console.WriteLine("Please enter a valid number");
+                            break;
+                        }
+
+                        TaskItem? taskToDelete = null;
+
+                        foreach (TaskItem task in myTasks)
+                        {
+                            if (task.Id == taskIdDel)
+                            {
+                                taskToDelete = task;
+                                break;
+                            }
+                        }
+
+                        if (taskToDelete == null)
+                        {
+                            Console.WriteLine("Task not found.");
+                        }
+                        else
+                        {
+                            myTasks.Remove(taskToDelete);
+                            Console.WriteLine("Task deleted.");
+                        }
+
+                        break;
+
+                    case "5":
                         isRunning = false;
                         break;
 
