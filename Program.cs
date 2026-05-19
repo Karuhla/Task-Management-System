@@ -15,7 +15,8 @@ namespace Task_Management_System
             {
                 Console.WriteLine("1. Add task");
                 Console.WriteLine("2. View tasks");
-                Console.WriteLine("3. Exit");
+                Console.WriteLine("3. Complete task");
+                Console.WriteLine("4. Exit");
 
                 string choice = Console.ReadLine() ?? "";
 
@@ -48,6 +49,39 @@ namespace Task_Management_System
                         break;
 
                     case "3":
+                        Console.WriteLine("Enter task ID to complete:");
+                        string input = Console.ReadLine() ?? "";
+
+                        if (!int.TryParse(input, out int taskId))
+                        {
+                            Console.WriteLine("Please enter a valid number.");
+                            break;
+                        }
+
+                        TaskItem? taskToComplete = null;
+
+                        foreach (TaskItem task in myTasks)
+                        {
+                            if (task.Id == taskId)
+                            {
+                                taskToComplete = task;
+                                break;
+                            }
+                        }
+
+                        if (taskToComplete == null)
+                        {
+                            Console.WriteLine("Task not found.");
+                        }
+                        else
+                        {
+                            taskToComplete.IsCompleted = true;
+                            Console.WriteLine("Task marked as completed.");
+                        }
+
+                        break;
+
+                    case "4":
                         isRunning = false;
                         break;
 
