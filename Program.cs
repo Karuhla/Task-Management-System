@@ -13,13 +13,7 @@ namespace Task_Management_System
 
             while (isRunning)
             {
-                Console.WriteLine("1. Add task");
-                Console.WriteLine("2. View tasks");
-                Console.WriteLine("3. Edit task");
-                Console.WriteLine("4. Complete task");
-                Console.WriteLine("5. Delete task");
-                Console.WriteLine("6. Exit\n");
-
+                ShowMenu();
                 string choice = Console.ReadLine() ?? "";
 
                 switch (choice)
@@ -83,31 +77,23 @@ namespace Task_Management_System
 
         static void ViewTasks(List<TaskItem> tasks)
         {
-            if(tasks.Count == 0)
+            if (tasks.Count == 0)
             {
                 Console.WriteLine("No tasks available.\n");
                 return;
             }
-            else 
+            
+            foreach (TaskItem task in tasks)
             {
-                foreach (TaskItem task in tasks)
-                {
-                    Console.WriteLine($"ID: {task.Id}");
-                    Console.WriteLine($"Title: {task.Title}");
-                    Console.WriteLine($"Description: {task.Description}");
-                    Console.WriteLine($"Is completed: {task.IsCompleted}\n");
-                }
+                 PrintTask(task);
             }
+            
         }
 
         static void EditTask(List<TaskItem> tasks)
         {
-            Console.WriteLine("Enter task ID to edit:");
-            string editInput = Console.ReadLine() ?? "";
-
-            if (!int.TryParse(editInput, out int taskIdToEdit))
+            if (!TryReadTaskId("edit", out int taskIdToEdit))
             {
-                Console.WriteLine("Please enter a valid number.");
                 return;
             }
 
@@ -143,7 +129,7 @@ namespace Task_Management_System
                 changed = true;
             }
 
-            if (changed) 
+            if (changed)
             { 
                 Console.WriteLine("Task updated.\n");
             }
@@ -155,12 +141,8 @@ namespace Task_Management_System
 
         static void CompleteTask(List<TaskItem> tasks)
         {
-            Console.WriteLine("Enter task ID to complete:");
-            string Completeinput = Console.ReadLine() ?? "";
-
-            if (!int.TryParse(Completeinput, out int taskIdToComplete))
+            if (!TryReadTaskId("complete", out int taskIdToComplete))
             {
-                Console.WriteLine("Please enter a valid number.");
                 return;
             }
 
@@ -178,12 +160,9 @@ namespace Task_Management_System
 
         static void DeleteTask(List<TaskItem> tasks)
         {
-            Console.WriteLine("Enter task ID to delete:");
-            string deleteInput = Console.ReadLine() ?? "";
 
-            if (!int.TryParse(deleteInput, out int taskIdToDelete))
+            if (!TryReadTaskId("delete", out int taskIdToDelete))
             {
-                Console.WriteLine("Please enter a valid number.");
                 return;
             }
 
@@ -191,7 +170,7 @@ namespace Task_Management_System
 
             if (taskToDelete == null)
             {
-                Console.WriteLine("Task not found.");
+                Console.WriteLine("Task not found.\n");
                 return;
             }
 
@@ -199,7 +178,7 @@ namespace Task_Management_System
             Console.WriteLine("Task deleted.\n");
         }
 
-        static TaskItem? FindTaskById (List<TaskItem> tasks, int taskId)
+        static TaskItem? FindTaskById(List<TaskItem> tasks, int taskId)
         {
             foreach (TaskItem task in tasks)
             {
@@ -212,5 +191,36 @@ namespace Task_Management_System
             return null;
         }
 
+        static void ShowMenu()
+        {
+            Console.WriteLine("1. Add task");
+            Console.WriteLine("2. View tasks");
+            Console.WriteLine("3. Edit task");
+            Console.WriteLine("4. Complete task");
+            Console.WriteLine("5. Delete task");
+            Console.WriteLine("6. Exit\n");
+        }
+
+        static void PrintTask(TaskItem task)
+        {
+            Console.WriteLine($"ID: {task.Id}");
+            Console.WriteLine($"Title: {task.Title}");
+            Console.WriteLine($"Description: {task.Description}");
+            Console.WriteLine($"Is completed: {task.IsCompleted}\n");
+        }
+
+        static bool TryReadTaskId(string action, out int taskId)
+        {
+            Console.WriteLine($"Enter task ID to {action}:");
+            string input = Console.ReadLine() ?? "";
+
+            if (!int.TryParse(input, out taskId))
+            {
+                Console.WriteLine("Please enter a valid number.");
+                return false;
+            }
+
+            return true;
+        }
     }
 }
