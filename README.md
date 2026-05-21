@@ -9,6 +9,7 @@ A console aaplication built with C# and .NET for managing tasks.
 - Edit tasks
 - Complete tasks
 - Delete tasks
+- Save tasks to file
 - Automatic task IDs
 - Task validation
 - Menu-based interaction
@@ -21,5 +22,4 @@ A console aaplication built with C# and .NET for managing tasks.
 
 ## Future Improvements
 
-- Save tasks to file
 - Database integration
