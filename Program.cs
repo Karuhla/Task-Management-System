@@ -1,13 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Text.Json;
 
 namespace Task_Management_System
 {
     class Program
     {
+        static string filePath = "tasks.json";
         static void Main(string[] args)
         {
-            List<TaskItem> myTasks = new List<TaskItem>();
+            List<TaskItem> myTasks = LoadTasks();
             bool isRunning = true;
             int nextId = 1;
 
@@ -47,6 +50,7 @@ namespace Task_Management_System
                         break;
 
                     case "6":
+                        SaveTasks(myTasks);
                         isRunning = false;
                         break;
 
@@ -221,6 +225,25 @@ namespace Task_Management_System
             }
 
             return true;
+        }
+
+        static void SaveTasks(List<TaskItem> tasks)
+        {
+            string json = JsonSerializer.Serialize(tasks);
+            File.WriteAllText(filePath, json);
+        }
+
+        static List<TaskItem> LoadTasks()
+        {
+            if (!File.Exists(filePath))
+            {
+                return new List<TaskItem>();
+            }
+
+            string json = File.ReadAllText(filePath);
+            List<TaskItem>? tasks = JsonSerializer.Deserialize<List<TaskItem>>(json);
+
+            return tasks ?? new List<TaskItem>();
         }
     }
 }
